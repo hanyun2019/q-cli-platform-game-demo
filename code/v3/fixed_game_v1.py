@@ -139,8 +139,8 @@ def load_enemy_sprite():
     
     return surface
 
-def load_coin_sprite():
-    """Create a simple star sprite instead of a coin"""
+def load_pentagram_sprite():
+    """Create a simple pentagram sprite"""
     surface = pygame.Surface((16, 16), pygame.SRCALPHA)
     
     # Star shape
@@ -184,7 +184,7 @@ class Player:
         self.velocity = pygame.Vector2(0, 0)
         self.on_ground = False
         self.score = 0
-        self.coins = 0
+        self.pentagrams = 0
         self.sprite = load_player_sprite()
         self.facing_right = True
         
@@ -305,14 +305,14 @@ class Enemy:
         self.rect.y = self.initial_y
         self.velocity = pygame.Vector2(-2, 0)
 
-# Coin (now a star)
-class Coin:
+# Pentagram (previously a star)
+class Pentagram:
     def __init__(self, x, y):
         self.rect = pygame.Rect(x, y, 16, 16)
         self.collected = False
         self.x = x
         self.y = y
-        self.sprite = load_coin_sprite()
+        self.sprite = load_pentagram_sprite()
         self.bob_offset = 0
         self.bob_direction = 1
         self.bob_speed = 0.2
@@ -346,12 +346,12 @@ class Coin:
 
 # Game state for replay
 class GameState:
-    def __init__(self, player_pos, player_vel, enemy_positions, enemy_velocities, coin_states):
+    def __init__(self, player_pos, player_vel, enemy_positions, enemy_velocities, pentagram_states):
         self.player_pos = player_pos
         self.player_vel = player_vel
         self.enemy_positions = enemy_positions
         self.enemy_velocities = enemy_velocities
-        self.coin_states = coin_states
+        self.pentagram_states = pentagram_states
 
 # Game
 class Game:
@@ -360,7 +360,7 @@ class Game:
         self.player = Player()
         self.platforms = []
         self.enemies = []
-        self.coins = []
+        self.pentagrams = []
         self.current_level = 1
         self.max_levels = 3
         self.setup_level(self.current_level)
@@ -375,7 +375,7 @@ class Game:
         # Clear existing objects
         self.platforms = []
         self.enemies = []
-        self.coins = []
+        self.pentagrams = []
         
         # Ground
         self.platforms.append(pygame.Rect(0, SCREEN_HEIGHT - 40, SCREEN_WIDTH, 40))
@@ -392,13 +392,13 @@ class Game:
             self.enemies.append(Enemy(300, SCREEN_HEIGHT - 80))
             self.enemies.append(Enemy(600, SCREEN_HEIGHT - 220))  # Adjusted for new platform height
             
-            # Coins
+            # Pentagrams
             for i in range(5):
-                self.coins.append(Coin(250 + i*30, SCREEN_HEIGHT - 150))
+                self.pentagrams.append(Pentagram(250 + i*30, SCREEN_HEIGHT - 150))
             for i in range(5):
-                self.coins.append(Coin(550 + i*30, SCREEN_HEIGHT - 210))  # Adjusted for new platform height
+                self.pentagrams.append(Pentagram(550 + i*30, SCREEN_HEIGHT - 210))  # Adjusted for new platform height
             for i in range(5):
-                self.coins.append(Coin(150 + i*30, SCREEN_HEIGHT - 270))  # Adjusted for new platform height
+                self.pentagrams.append(Pentagram(150 + i*30, SCREEN_HEIGHT - 270))  # Adjusted for new platform height
                 
         elif level_number == 2:
             # Level 2 - More platforms and enemies
@@ -415,17 +415,17 @@ class Game:
             self.enemies.append(Enemy(650, SCREEN_HEIGHT - 190))
             self.enemies.append(Enemy(250, SCREEN_HEIGHT - 290))  # Adjusted for new platform height
             
-            # Coins
+            # Pentagrams
             for i in range(3):
-                self.coins.append(Coin(120 + i*30, SCREEN_HEIGHT - 180))
+                self.pentagrams.append(Pentagram(120 + i*30, SCREEN_HEIGHT - 180))
             for i in range(3):
-                self.coins.append(Coin(370 + i*30, SCREEN_HEIGHT - 210))  # Adjusted for new platform height
+                self.pentagrams.append(Pentagram(370 + i*30, SCREEN_HEIGHT - 210))  # Adjusted for new platform height
             for i in range(3):
-                self.coins.append(Coin(620 + i*30, SCREEN_HEIGHT - 180))
+                self.pentagrams.append(Pentagram(620 + i*30, SCREEN_HEIGHT - 180))
             for i in range(3):
-                self.coins.append(Coin(220 + i*30, SCREEN_HEIGHT - 280))  # Adjusted for new platform height
+                self.pentagrams.append(Pentagram(220 + i*30, SCREEN_HEIGHT - 280))  # Adjusted for new platform height
             for i in range(3):
-                self.coins.append(Coin(470 + i*30, SCREEN_HEIGHT - 330))  # Adjusted for new platform height
+                self.pentagrams.append(Pentagram(470 + i*30, SCREEN_HEIGHT - 330))  # Adjusted for new platform height
                 
         elif level_number == 3:
             # Level 3 - Complex layout with more challenges
@@ -448,11 +448,11 @@ class Game:
             self.enemies.append(Enemy(450, SCREEN_HEIGHT - 260))  # Adjusted for new platform height
             self.enemies.append(Enemy(400, SCREEN_HEIGHT - 350))  # Adjusted height
             
-            # Coins
+            # Pentagrams
             for i in range(20):
                 x = 100 + (i % 5) * 150
                 y = SCREEN_HEIGHT - 180 - (i // 5) * 60  # Adjusted from -200 and *80 to make more accessible
-                self.coins.append(Coin(x, y))
+                self.pentagrams.append(Pentagram(x, y))
     
     def start_recording(self):
         """Start recording gameplay for replay"""
@@ -481,13 +481,13 @@ class Game:
             enemy_positions.append((enemy.rect.x, enemy.rect.y))
             enemy_velocities.append(enemy.velocity.x)
             
-        # Record coin states
-        coin_states = []
-        for coin in self.coins:
-            coin_states.append(coin.collected)
+        # Record pentagram states
+        pentagram_states = []
+        for pentagram in self.pentagrams:
+            pentagram_states.append(pentagram.collected)
             
         # Create game state and add to replay
-        game_state = GameState(player_pos, player_vel, enemy_positions, enemy_velocities, coin_states)
+        game_state = GameState(player_pos, player_vel, enemy_positions, enemy_velocities, pentagram_states)
         self.replay_states.append(game_state)
         
     def start_replay(self):
@@ -522,10 +522,10 @@ class Game:
                 enemy.rect.x, enemy.rect.y = frame.enemy_positions[i]
                 enemy.velocity.x = frame.enemy_velocities[i]
                 
-        # Update coins
-        for i, coin in enumerate(self.coins):
-            if i < len(frame.coin_states):
-                coin.collected = frame.coin_states[i]
+        # Update pentagrams
+        for i, pentagram in enumerate(self.pentagrams):
+            if i < len(frame.pentagram_states):
+                pentagram.collected = frame.pentagram_states[i]
                 
         # Advance replay index based on speed
         self.replay_index += int(self.replay_speed)
@@ -661,18 +661,18 @@ class Game:
                 if enemy in self.enemies:
                     self.enemies.remove(enemy)
             
-            # Check coin collisions
-            for coin in self.coins:
-                if not coin.collected and self.player.rect.colliderect(coin.rect):
-                    coin.collected = True
-                    self.player.coins += 1
+            # Check pentagram collisions
+            for pentagram in self.pentagrams:
+                if not pentagram.collected and self.player.rect.colliderect(pentagram.rect):
+                    pentagram.collected = True
+                    self.player.pentagrams += 1
                     self.player.score += 50
                     # Play star sound
                     if star_sound:
                         star_sound.play()
                     
-            # Check if all coins collected
-            if all(coin.collected for coin in self.coins) and not self.enemies:
+            # Check if all pentagrams collected
+            if all(pentagram.collected for pentagram in self.pentagrams) and not self.enemies:
                 self.state = 'win'
                 # Play level complete sound
                 if level_complete_sound:
@@ -725,9 +725,9 @@ class Game:
             for platform in self.platforms:
                 pygame.draw.rect(screen, GROUND_COLOR, platform)
                 
-            # Draw coins
-            for coin in self.coins:
-                coin.draw()
+            # Draw pentagrams
+            for pentagram in self.pentagrams:
+                pentagram.draw()
                 
             # Draw enemies
             for enemy in self.enemies:
@@ -740,8 +740,8 @@ class Game:
             score_text = font.render(f'Score: {self.player.score}', True, TEXT_COLOR)
             screen.blit(score_text, (20, 20))
             
-            stars_text = font.render(f'Stars: {self.player.coins}', True, TEXT_COLOR)
-            screen.blit(stars_text, (20, 50))
+            pentagrams_text = font.render(f'Pentagrams: {self.player.pentagrams}', True, TEXT_COLOR)
+            screen.blit(pentagrams_text, (20, 50))
             
             # Replay indicator
             if self.state == 'replay':
