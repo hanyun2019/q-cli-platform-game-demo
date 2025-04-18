@@ -22,7 +22,7 @@ TILE_SIZE = 32
 # Colors
 SKY_COLOR = (93, 148, 251)
 GROUND_COLOR = (88, 36, 9)
-MARIO_COLOR = (255, 0, 0)
+PLAYER_COLOR = (255, 0, 0)
 ENEMY_COLOR = (0, 0, 255)
 STAR_COLOR = (255, 215, 0)
 TEXT_COLOR = (255, 255, 255)
@@ -94,13 +94,13 @@ def load_sounds():
 # Load sounds
 load_sounds()
 
-def load_mario_sprite():
-    """Create a simple Mario-like sprite"""
+def load_player_sprite():
+    """Create a simple player sprite"""
     surface = pygame.Surface((32, 32), pygame.SRCALPHA)
     
     # Red hat and shirt
-    pygame.draw.rect(surface, (255, 0, 0), (0, 0, 32, 10))
-    pygame.draw.rect(surface, (255, 0, 0), (8, 18, 16, 14))
+    pygame.draw.rect(surface, PLAYER_COLOR, (0, 0, 32, 10))
+    pygame.draw.rect(surface, PLAYER_COLOR, (8, 18, 16, 14))
     
     # Blue overalls
     pygame.draw.rect(surface, (0, 0, 255), (8, 10, 16, 8))
@@ -185,7 +185,7 @@ class Player:
         self.on_ground = False
         self.score = 0
         self.coins = 0
-        self.sprite = load_mario_sprite()
+        self.sprite = load_player_sprite()
         self.facing_right = True
         
     def update(self, platforms):
@@ -392,7 +392,7 @@ class Game:
             self.enemies.append(Enemy(300, SCREEN_HEIGHT - 80))
             self.enemies.append(Enemy(600, SCREEN_HEIGHT - 220))  # Adjusted for new platform height
             
-            # Stars
+            # Coins
             for i in range(5):
                 self.coins.append(Coin(250 + i*30, SCREEN_HEIGHT - 150))
             for i in range(5):
@@ -415,7 +415,7 @@ class Game:
             self.enemies.append(Enemy(650, SCREEN_HEIGHT - 190))
             self.enemies.append(Enemy(250, SCREEN_HEIGHT - 290))  # Adjusted for new platform height
             
-            # Stars
+            # Coins
             for i in range(3):
                 self.coins.append(Coin(120 + i*30, SCREEN_HEIGHT - 180))
             for i in range(3):
@@ -448,7 +448,7 @@ class Game:
             self.enemies.append(Enemy(450, SCREEN_HEIGHT - 260))  # Adjusted for new platform height
             self.enemies.append(Enemy(400, SCREEN_HEIGHT - 350))  # Adjusted height
             
-            # Stars
+            # Coins
             for i in range(20):
                 x = 100 + (i % 5) * 150
                 y = SCREEN_HEIGHT - 180 - (i // 5) * 60  # Adjusted from -200 and *80 to make more accessible
